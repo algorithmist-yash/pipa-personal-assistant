@@ -1,3 +1,4 @@
+from analyzer import analyze_dsa_depth
 from analyzer import analyze_ai_depth
 from analyzer import analyze_upsc_balance
 from database import fetch_last_n_days
@@ -138,3 +139,22 @@ if st.button("🧠 Analyze AI Research Depth (Last 14 Days)"):
             st.error(w)
     else:
         st.success("✅ AI progression shows healthy depth.")
+
+st.markdown("---")
+st.markdown("🧩 DSA Problem-Solving Tracker")
+
+if st.button("📐 Analyze DSA Progress (Last 14 Days)"):
+    logs = fetch_last_n_days(14)
+    dsa_analysis = analyze_dsa_depth(logs)
+
+    st.write("### DSA Activity by Level")
+    st.write(dsa_analysis["level_score"])
+
+    st.write(f"**Dominant DSA Level:** {dsa_analysis['dominant_level']}")
+
+    if dsa_analysis["warnings"]:
+        st.markdown("### 🚨 DSA Warnings")
+        for w in dsa_analysis["warnings"]:
+            st.error(w)
+    else:
+        st.success("✅ DSA progression looks healthy.")

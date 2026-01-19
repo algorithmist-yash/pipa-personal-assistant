@@ -119,6 +119,56 @@ def classify_tasks(text):
     }
 
 
+def analyze_dsa_depth(logs):
+    """
+    Analyze DSA problem-solving depth.
+    """
+
+    level_score = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0
+    }
+
+    dsa_keywords = {
+        0: ["dsa video", "lecture", "tutorial"],
+        1: ["easy", "leetcode easy", "basic"],
+        2: ["medium", "leetcode medium"],
+        3: ["hard", "pattern", "sliding window", "dp", "graph", "tree"],
+        4: ["explain", "optimize", "time complexity", "revision", "editorial"]
+    }
+
+    for log in logs:
+        _, _, actual, _, _ = log
+        text = actual.lower()
+
+        if "dsa" not in text and "leetcode" not in text:
+            continue
+
+        for level, keywords in dsa_keywords.items():
+            if any(k in text for k in keywords):
+                level_score[level] += 1
+
+    dominant_level = max(level_score, key=level_score.get)
+
+    warnings = []
+    if level_score[1] > level_score[2] + level_score[3]:
+        warnings.append("⚠️ DSA stuck at easy level")
+
+    if level_score[2] > 0 and level_score[3] == 0:
+        warnings.append("⚠️ Medium problems without pattern progression")
+
+    if level_score[4] == 0 and sum(level_score.values()) > 5:
+        warnings.append("⚠️ Solving without revision or explanation")
+
+    return {
+        "level_score": level_score,
+        "dominant_level": dominant_level,
+        "warnings": warnings
+    }
+
 def analyze_upsc_balance(logs):
     """
     Analyze GS vs Maths vs AI balance over time.
