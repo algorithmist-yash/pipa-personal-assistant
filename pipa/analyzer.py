@@ -280,3 +280,23 @@ def recovery_recommendation(trend):
     if trend["avg_completion"] <= 0.5:
         return "Recovery Mode: Simplify goals, rebuild momentum with easy wins."
     return None
+
+
+def discipline_score(streak_status, trend=None):
+    """
+    Discipline score out of 100.
+    """
+    score = 100
+
+    if streak_status == "BROKEN":
+        score -= 30
+    elif streak_status == "CONTINUE":
+        score += 5
+
+    if trend:
+        if trend["consistency"] == "POOR":
+            score -= 20
+        if trend["burnout_risk"] != "LOW":
+            score -= 10
+
+    return max(min(score, 100), 0)

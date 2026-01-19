@@ -105,3 +105,65 @@ def has_logged_today(log_date):
     conn.close()
 
     return result is not None
+
+def create_weekly_table():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS weekly_verdicts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        week_start TEXT,
+        verdict TEXT,
+        created_at TEXT
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+def save_weekly_verdict(week_start, verdict):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO weekly_verdicts (week_start, verdict, created_at)
+    VALUES (?, ?, datetime('now'))
+    """, (week_start, verdict))
+
+    conn.commit()
+    conn.close()
+
+def get_last_log_date():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT log_date FROM daily_logs
+    ORDER BY log_date DESC
+    LIMIT 1
+    """)
+
+    row = cursor.fetchone()
+    conn.close()
+
+    return row[0] if row else None
+
+
+def calculate_streak(today):
+    last_date = get_last_log_date()
+    if not last_date:
+        return 0
+
+    from datetime import datetime, timedelta
+
+    last_date = datetime.fromisoformat(last_date).date()
+    today = datetime.fromisoformat(str(today)).date()
+
+    if last_date == today:
+        return None  # already logged today
+    elif last_date == today - timedelta(days=1):
+        return "CONTINUE"
+    else:
+        return "BROKEN"
