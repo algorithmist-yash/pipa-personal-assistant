@@ -1,3 +1,6 @@
+from analyzer import recovery_recommendation
+from analyzer import weekly_verdict
+from database import has_logged_today
 from analyzer import analyze_dsa_depth
 from analyzer import analyze_ai_depth
 from analyzer import analyze_upsc_balance
@@ -21,6 +24,9 @@ st.title("🧠 PIPA – Daily Study Analyzer")
 st.markdown("### 📅 Daily Log")
 
 log_date = st.date_input("Date", value=date.today())
+
+if has_logged_today(log_date):
+    st.warning("⚠️ Today is already logged. Update consciously, not casually.")
 
 st.markdown("### 📝 Planned Tasks")
 planned_tasks = st.text_area(
@@ -158,3 +164,30 @@ if st.button("📐 Analyze DSA Progress (Last 14 Days)"):
             st.error(w)
     else:
         st.success("✅ DSA progression looks healthy.")
+
+st.markdown("---")
+st.markdown("🏁 Weekly Verdict (Truth Mode)")
+
+if st.button("⚖️ Generate Weekly Verdict"):
+    logs = fetch_last_n_days(7)
+
+    trend = analyze_trends(logs)
+    upsc = analyze_upsc_balance(logs)
+    ai = analyze_ai_depth(logs)
+    dsa = analyze_dsa_depth(logs)
+
+    verdicts = weekly_verdict(trend, upsc, ai, dsa)
+
+    st.markdown("### 🏁 Weekly Verdict")
+    for v in verdicts:
+        if "❌" in v or "🚨" in v:
+            st.error(v)
+        elif "⚠️" in v:
+            st.warning(v)
+        else:
+            st.success(v)
+    st.markdown("🛟 Recovery Advisory")
+
+    recovery = recovery_recommendation(trend)
+    if recovery:
+        st.warning(recovery)

@@ -250,3 +250,33 @@ def analyze_ai_depth(logs):
         "dominant_level": dominant_level,
         "warnings": warnings
     }
+
+def weekly_verdict(trend, upsc, ai, dsa):
+    verdicts = []
+
+    if trend["consistency"] == "POOR":
+        verdicts.append("❌ Inconsistent week — discipline breakdown")
+
+    if trend["burnout_risk"] != "LOW":
+        verdicts.append("⚠️ Burnout accumulating — sustainability at risk")
+
+    if upsc["risks"]:
+        verdicts.append("🚨 UPSC imbalance detected — exam risk rising")
+
+    if ai["dominant_level"] <= 1:
+        verdicts.append("⚠️ AI learning shallow — consumption over creation")
+
+    if dsa["dominant_level"] <= 1:
+        verdicts.append("⚠️ DSA stuck at easy level")
+
+    if not verdicts:
+        verdicts.append("✅ Strong week — trajectory healthy")
+
+    return verdicts
+
+def recovery_recommendation(trend):
+    if trend["avg_energy"] <= 4:
+        return "Recovery Mode: Reduce workload by 30%, focus on sleep & revision."
+    if trend["avg_completion"] <= 0.5:
+        return "Recovery Mode: Simplify goals, rebuild momentum with easy wins."
+    return None

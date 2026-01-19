@@ -92,3 +92,16 @@ def fetch_all_logs():
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+def has_logged_today(log_date):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT 1 FROM daily_logs WHERE log_date = ?
+    """, (str(log_date),))
+
+    result = cursor.fetchone()
+    conn.close()
+
+    return result is not None
