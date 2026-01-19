@@ -4,6 +4,8 @@ __pycache__/
 
 # Virtual environment
 venv/
+.env/
+.venv/
 
 # Local database
 pipa.db
@@ -14,6 +16,23 @@ pipa.db
 
 #secrets
 .env
+config.json
+secrets.yaml
 
 # OS
 .DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs & temp
+*.log
+*.tmp
+
+# Test & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+
