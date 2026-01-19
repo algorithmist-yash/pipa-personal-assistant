@@ -8,5 +8,12 @@ venv/
 # Local database
 pipa.db
 
+# Local database
+*.db
+*.sqlite
+
+#secrets
+.env
+
 # OS
 .DS_Store
