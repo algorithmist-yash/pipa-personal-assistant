@@ -1,3 +1,4 @@
+from analyzer import analyze_ai_depth
 from analyzer import analyze_upsc_balance
 from database import fetch_last_n_days
 from database import fetch_last_n_days
@@ -118,3 +119,22 @@ if st.button("📚 Analyze UPSC Focus (Last 7 Days)"):
             st.error(risk)
     else:
         st.success("✅ UPSC preparation balance looks healthy.")
+
+st.markdown("---")
+st.markdown("## 🤖 AI Researcher Progress Tracker")
+
+if st.button("🧠 Analyze AI Research Depth (Last 14 Days)"):
+    logs = fetch_last_n_days(14)
+    ai_analysis = analyze_ai_depth(logs)
+
+    st.write("### AI Activity by Level")
+    st.write(ai_analysis["level_score"])
+
+    st.write(f"**Dominant AI Level:** {ai_analysis['dominant_level']}")
+
+    if ai_analysis["warnings"]:
+        st.markdown("### 🚨 AI Progress Warnings")
+        for w in ai_analysis["warnings"]:
+            st.error(w)
+    else:
+        st.success("✅ AI progression shows healthy depth.")

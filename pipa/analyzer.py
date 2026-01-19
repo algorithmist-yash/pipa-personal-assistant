@@ -151,3 +151,52 @@ def analyze_upsc_balance(logs):
         "coverage": summary,
         "risks": risks
     }
+
+def analyze_ai_depth(logs):
+    """
+    Analyze AI learning depth and research maturity.
+    """
+
+    level_score = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0
+    }
+
+    depth_keywords = {
+        0: ["video", "watch", "lecture", "blog"],
+        1: ["implement", "code", "from scratch", "train"],
+        2: ["explain", "intuition", "derive", "why"],
+        3: ["modify", "experiment", "change", "custom"],
+        4: ["evaluate", "benchmark", "ablation", "metric"],
+        5: ["paper", "research", "rag", "agent", "deployment"]
+    }
+
+    for log in logs:
+        _, _, actual, _, _ = log
+        text = actual.lower()
+
+        for level, keywords in depth_keywords.items():
+            if any(k in text for k in keywords):
+                level_score[level] += 1
+
+    dominant_level = max(level_score, key=level_score.get)
+
+    warnings = []
+    if level_score[0] > level_score[1] + level_score[2]:
+        warnings.append("⚠️ AI learning stuck at consumption level")
+
+    if level_score[1] > 0 and level_score[2] == 0:
+        warnings.append("⚠️ Implementation without understanding detected")
+
+    if level_score[3] == 0 and level_score[4] == 0 and level_score[5] == 0:
+        warnings.append("⚠️ No research-grade activity yet")
+
+    return {
+        "level_score": level_score,
+        "dominant_level": dominant_level,
+        "warnings": warnings
+    }
