@@ -1,3 +1,4 @@
+from database import create_table, insert_daily_log
 import streamlit as st
 from datetime import date
 
@@ -5,6 +6,8 @@ st.set_page_config(
     page_title="PIPA – Personal Intelligence & Progress Analyzer",
     layout="centered"
 )
+
+create_table()
 
 st.title("🧠 PIPA – Daily Study Analyzer")
 
@@ -36,4 +39,12 @@ reflection = st.text_area(
 )
 
 if st.button("📊 Analyze My Day"):
-    st.success("Day logged successfully! Analysis engine will be added next.")
+    insert_daily_log(
+	log_date,
+	planned_tasks,
+	actual_tasks,
+	energy,
+	clarity,
+	reflection
+    )
+    st.success("✅ Day saved successfully. Memory updated.")
