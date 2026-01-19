@@ -100,3 +100,54 @@ def analyze_trends(logs):
         "burnout_risk": burnout_risk,
         "consistency": consistency
     }
+
+def classify_tasks(text):
+    text = text.lower()
+
+    gs_keywords = ["polity", "geography", "economy", "history", "ethics", "gs"]
+    maths_keywords = ["math", "algebra", "calculus", "probability", "statistics", "vector"]
+    ai_keywords = ["ai", "ml", "nlp", "deep learning", "transformer", "llm"]
+
+    gs = any(k in text for k in gs_keywords)
+    maths = any(k in text for k in maths_keywords)
+    ai = any(k in text for k in ai_keywords)
+
+    return {
+        "GS": int(gs),
+        "MATHS": int(maths),
+        "AI": int(ai)
+    }
+
+
+def analyze_upsc_balance(logs):
+    """
+    Analyze GS vs Maths vs AI balance over time.
+    """
+
+    summary = {"GS": 0, "MATHS": 0, "AI": 0}
+
+    for log in logs:
+        _, planned, actual, _, _ = log
+        classification = classify_tasks(actual)
+
+        for key in summary:
+            summary[key] += classification[key]
+
+    total_days = len(logs)
+
+    risks = []
+
+    if summary["GS"] < total_days * 0.5:
+        risks.append("⚠️ GS coverage insufficient — high UPSC risk")
+
+    if summary["MATHS"] > total_days * 0.8:
+        risks.append("⚠️ Maths optional dominating — GS may be neglected")
+
+    if summary["AI"] > total_days * 0.7:
+        risks.append("⚠️ AI workload high — risk of UPSC focus dilution")
+
+    return {
+        "days_analyzed": total_days,
+        "coverage": summary,
+        "risks": risks
+    }

@@ -1,3 +1,5 @@
+from analyzer import analyze_upsc_balance
+from database import fetch_last_n_days
 from database import fetch_last_n_days
 from analyzer import analyze_trends
 from analyzer import analyze_day
@@ -98,3 +100,21 @@ if st.button("🔍 Analyze Last 7 Days"):
 
         if trend["consistency"] == "POOR":
             st.error("🚨 Low consistency. Long-term targets at risk if pattern continues.")
+
+st.markdown("---")
+st.markdown("## 🎯 UPSC Balance Intelligence")
+
+if st.button("📚 Analyze UPSC Focus (Last 7 Days)"):
+    logs = fetch_last_n_days(7)
+    upsc_analysis = analyze_upsc_balance(logs)
+
+    st.write(f"**Days Analyzed:** {upsc_analysis['days_analyzed']}")
+    st.write("### Coverage Summary")
+    st.write(upsc_analysis["coverage"])
+
+    if upsc_analysis["risks"]:
+        st.markdown("### 🚨 UPSC Risk Alerts")
+        for risk in upsc_analysis["risks"]:
+            st.error(risk)
+    else:
+        st.success("✅ UPSC preparation balance looks healthy.")
