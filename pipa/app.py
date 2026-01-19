@@ -1,3 +1,4 @@
+from analyzer import analyze_day
 from database import create_table, insert_daily_log
 import streamlit as st
 from datetime import date
@@ -40,11 +41,36 @@ reflection = st.text_area(
 
 if st.button("📊 Analyze My Day"):
     insert_daily_log(
-	log_date,
-	planned_tasks,
-	actual_tasks,
-	energy,
-	clarity,
-	reflection
+        log_date,
+        planned_tasks,
+        actual_tasks,
+        energy,
+        clarity,
+        reflection
     )
-    st.success("✅ Day saved successfully. Memory updated.")
+
+    analysis = analyze_day(
+        planned_tasks,
+        actual_tasks,
+        energy,
+        clarity
+    )
+
+    st.success("✅ Day saved & analyzed")
+
+    st.markdown("## 📈 Analysis Summary")
+
+    st.write(f"**Completion Ratio:** {analysis['completion_ratio']}")
+    st.write(f"**Productivity Score:** {analysis['productivity_score']}")
+    st.write(f"**Burnout Risk:** {analysis['burnout_flag']}")
+
+    if analysis["gaps"]:
+        st.markdown("### ⚠️ Gaps Detected")
+        for gap in analysis["gaps"]:
+            st.warning(gap)
+
+    if analysis["risk_flags"]:
+        st.markdown("### 🚨 Risk Flags")
+        for risk in analysis["risk_flags"]:
+            st.error(risk)
+
