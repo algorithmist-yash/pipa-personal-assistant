@@ -1,3 +1,5 @@
+from database import fetch_last_n_days
+from analyzer import analyze_trends
 from analyzer import analyze_day
 from database import create_table, insert_daily_log
 import streamlit as st
@@ -74,3 +76,25 @@ if st.button("📊 Analyze My Day"):
         for risk in analysis["risk_flags"]:
             st.error(risk)
 
+st.markdown("---")
+st.markdown("## 📊 Weekly Intelligence Dashboard")
+
+if st.button("🔍 Analyze Last 7 Days"):
+    logs = fetch_last_n_days(7)
+    trend = analyze_trends(logs)
+
+    if not trend:
+        st.info("No historical data available yet.")
+    else:
+        st.write(f"**Days Analyzed:** {trend['days_analyzed']}")
+        st.write(f"**Average Completion:** {trend['avg_completion']}")
+        st.write(f"**Average Energy:** {trend['avg_energy']}")
+        st.write(f"**Average Clarity:** {trend['avg_clarity']}")
+        st.write(f"**Consistency:** {trend['consistency']}")
+        st.write(f"**Burnout Risk:** {trend['burnout_risk']}")
+
+        if trend["burnout_risk"] != "LOW":
+            st.warning("⚠️ Burnout trend detected. Consider reducing load or improving recovery.")
+
+        if trend["consistency"] == "POOR":
+            st.error("🚨 Low consistency. Long-term targets at risk if pattern continues.")

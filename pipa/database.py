@@ -62,3 +62,33 @@ def insert_daily_log(
 
     conn.commit()
     conn.close()
+
+def fetch_last_n_days(n=7):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT log_date, planned_tasks, actual_tasks, energy, clarity
+    FROM daily_logs
+    ORDER BY log_date DESC
+    LIMIT ?
+    """, (n,))
+
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+
+def fetch_all_logs():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT log_date, planned_tasks, actual_tasks, energy, clarity
+    FROM daily_logs
+    ORDER BY log_date ASC
+    """)
+
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
